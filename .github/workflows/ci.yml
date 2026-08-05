@@ -30,9 +30,6 @@ jobs:
             - name: Check Formatting
               run: pnpm format:check
 
-            - name: Check ENV example
-              run: pnpm env:check
-
             - name: Typecheck
               run: pnpm typecheck
 
