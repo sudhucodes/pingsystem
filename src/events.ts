@@ -1,8 +1,10 @@
+import { startupMessage } from "./system.js";
 import { send } from "./telegram.js";
 
 export const events = {
     startup() {
-        return send("🟢 Startup Event");
+        const message = startupMessage();
+        return send(message);
     },
 
     shutdown() {
