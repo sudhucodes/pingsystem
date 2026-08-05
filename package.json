@@ -10,7 +10,7 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "env:check": "pnpx envnix validate",
-        "prepare": "husky"
+        "typecheck": "tsc --noEmit"
     },
     "devDependencies": {
         "@types/node": "^26.1.2",
