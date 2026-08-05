@@ -1,3 +1,22 @@
-node_modules
-dist
+# Executables
+*.exe
+*.exe.manifest
+*.dll
+*.so
+*.dylib
+
+# Test binary built by `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Local binaries and configs
+PingSystem.exe
+logs/
+config.json
 .env
+
+# IDE
+.idea/
+.vscode/
