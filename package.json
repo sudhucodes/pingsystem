@@ -9,6 +9,7 @@
         "start": "node dist/index.js",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
+        "env:check": "pnpx envnix validate",
         "prepare": "husky"
     },
     "devDependencies": {
