@@ -18,6 +18,8 @@ const (
 	EventStartup  EventType = "Startup / User Login"
 	EventSleep    EventType = "Sleep"
 	EventWake     EventType = "Wake"
+	EventLock     EventType = "Lock"
+	EventUnlock   EventType = "Unlock"
 	EventShutdown EventType = "Shutdown"
 )
 
@@ -26,17 +28,6 @@ type Client struct {
 	botToken   string
 	chatID     string
 	httpClient *http.Client
-}
-
-// NewClient initializes a Telegram client.
-func NewClient(botToken, chatID string) *Client {
-	return &Client{
-		botToken: botToken,
-		chatID:   chatID,
-		httpClient: &http.Client{
-			Timeout: 10 * time.Second,
-		},
-	}
 }
 
 type sendMessageRequest struct {
@@ -48,6 +39,17 @@ type sendMessageRequest struct {
 type sendMessageResponse struct {
 	OK          bool   `json:"ok"`
 	Description string `json:"description"`
+}
+
+// NewClient initializes a Telegram client.
+func NewClient(botToken, chatID string) *Client {
+	return &Client{
+		botToken: botToken,
+		chatID:   chatID,
+		httpClient: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+	}
 }
 
 // SendEvent sends a system event notification to Telegram.
@@ -123,6 +125,10 @@ func getEventIcon(eventType EventType) string {
 		return "🌙"
 	case EventWake:
 		return "☀️"
+	case EventLock:
+		return "🔒"
+	case EventUnlock:
+		return "🔓"
 	case EventShutdown:
 		return "🛑"
 	default:

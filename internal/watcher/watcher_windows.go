@@ -14,21 +14,31 @@ import (
 )
 
 const (
-	WM_CREATE          = 0x0001
-	WM_DESTROY         = 0x0002
-	WM_CLOSE           = 0x0010
-	WM_QUERYENDSESSION = 0x0011
-	WM_ENDSESSION      = 0x0016
-	WM_POWERBROADCAST  = 0x0218
+	WM_CREATE            = 0x0001
+	WM_DESTROY           = 0x0002
+	WM_CLOSE             = 0x0010
+	WM_QUERYENDSESSION   = 0x0011
+	WM_ENDSESSION        = 0x0016
+	WM_POWERBROADCAST    = 0x0218
+	WM_WTSSESSION_CHANGE = 0x02B1
 
 	PBT_APMSUSPEND         = 0x0004
 	PBT_APMRESUMESUSPEND   = 0x0007
 	PBT_APMRESUMEAUTOMATIC = 0x0012
+
+	WTS_CONSOLE_CONNECT    = 0x1
+	WTS_CONSOLE_DISCONNECT = 0x2
+	WTS_SESSION_LOCK       = 0x7
+	WTS_SESSION_UNLOCK     = 0x8
+
+	NOTIFY_FOR_THIS_SESSION = 0
 )
 
 var (
-	user32               = windows.NewLazySystemDLL("user32.dll")
-	kernel32             = windows.NewLazySystemDLL("kernel32.dll")
+	user32   = windows.NewLazySystemDLL("user32.dll")
+	kernel32 = windows.NewLazySystemDLL("kernel32.dll")
+	wtsapi32 = windows.NewLazySystemDLL("wtsapi32.dll")
+
 	procRegisterClassExW = user32.NewProc("RegisterClassExW")
 	procCreateWindowExW  = user32.NewProc("CreateWindowExW")
 	procDefWindowProcW   = user32.NewProc("DefWindowProcW")
@@ -39,6 +49,9 @@ var (
 	procDestroyWindow    = user32.NewProc("DestroyWindow")
 
 	procGetModuleHandleW = kernel32.NewProc("GetModuleHandleW")
+
+	procWTSRegisterSessionNotification   = wtsapi32.NewProc("WTSRegisterSessionNotification")
+	procWTSUnregisterSessionNotification = wtsapi32.NewProc("WTSUnregisterSessionNotification")
 )
 
 type WNDCLASSEXW struct {
@@ -112,16 +125,14 @@ func (w *WindowsWatcher) Start() error {
 
 	procRegisterClassExW.Call(uintptr(unsafe.Pointer(&wc)))
 
-	// HWND_MESSAGE is ((HWND)-3)
-	hwndMessage := ^uintptr(2)
-
-	// Create message-only window
+	// Create a top-level hidden window (hWndParent = 0) so broadcast messages
+	// like WM_POWERBROADCAST and WM_WTSSESSION_CHANGE are delivered properly.
 	hwnd, _, _ := procCreateWindowExW.Call(
 		0,
 		uintptr(unsafe.Pointer(className)),
 		uintptr(unsafe.Pointer(windowName)),
 		0, 0, 0, 0, 0,
-		hwndMessage,
+		0,
 		0,
 		instance,
 		0,
@@ -132,6 +143,9 @@ func (w *WindowsWatcher) Start() error {
 	}
 
 	w.hwnd = windows.Handle(hwnd)
+
+	// Register for Windows Session Lock/Unlock notifications
+	procWTSRegisterSessionNotification.Call(uintptr(w.hwnd), NOTIFY_FOR_THIS_SESSION)
 
 	var msg MSG
 	for {
@@ -153,6 +167,7 @@ func (w *WindowsWatcher) Start() error {
 
 func (w *WindowsWatcher) Stop() {
 	if w.hwnd != 0 {
+		procWTSUnregisterSessionNotification.Call(uintptr(w.hwnd))
 		procPostQuitMessage.Call(0)
 		procDestroyWindow.Call(uintptr(w.hwnd))
 	}
@@ -185,6 +200,19 @@ func wndProc(hwnd windows.Handle, msg uint32, wParam, lParam uintptr) uintptr {
 			}
 		}
 		return 1
+
+	case WM_WTSSESSION_CHANGE:
+		switch wParam {
+		case WTS_SESSION_LOCK:
+			if globalWatcher.callbacks.OnLock != nil {
+				globalWatcher.callbacks.OnLock()
+			}
+		case WTS_SESSION_UNLOCK:
+			if globalWatcher.callbacks.OnUnlock != nil {
+				globalWatcher.callbacks.OnUnlock()
+			}
+		}
+		return 0
 
 	case WM_QUERYENDSESSION:
 		if globalWatcher.callbacks.OnShutdown != nil {

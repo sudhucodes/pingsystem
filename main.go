@@ -116,7 +116,7 @@ func main() {
 		}
 	}
 
-	// Step 5: Event callbacks for Sleep, Wake, Shutdown
+	// Step 5: Event callbacks for Sleep, Wake, Lock, Unlock, Shutdown
 	callbacks := watcher.EventCallbacks{
 		OnSleep: func() {
 			logger.Info("Detected event: Windows Sleep")
@@ -137,6 +137,28 @@ func main() {
 					logger.Error("Failed to send Wake notification: %v", err)
 				} else {
 					logger.Info("Wake notification sent successfully.")
+				}
+			}
+		},
+		OnLock: func() {
+			logger.Info("Detected event: Windows Lock")
+			if err := cfg.Validate(); err == nil {
+				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
+				if err := tgClient.SendEvent(telegram.EventLock, currentInfo); err != nil {
+					logger.Error("Failed to send Lock notification: %v", err)
+				} else {
+					logger.Info("Lock notification sent successfully.")
+				}
+			}
+		},
+		OnUnlock: func() {
+			logger.Info("Detected event: Windows Unlock")
+			if err := cfg.Validate(); err == nil {
+				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
+				if err := tgClient.SendEvent(telegram.EventUnlock, currentInfo); err != nil {
+					logger.Error("Failed to send Unlock notification: %v", err)
+				} else {
+					logger.Info("Unlock notification sent successfully.")
 				}
 			}
 		},

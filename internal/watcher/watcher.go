@@ -4,6 +4,8 @@ package watcher
 type EventCallbacks struct {
 	OnSleep    func()
 	OnWake     func()
+	OnLock     func()
+	OnUnlock   func()
 	OnShutdown func()
 }
 
