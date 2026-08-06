@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/sudhucodes/pingsystem/internal/sysinfo"
@@ -134,21 +135,12 @@ func getEventIcon(eventType EventType) string {
 
 // escapeMarkdown escapes MarkdownV2 reserved characters in dynamic text strings.
 func escapeMarkdown(text string) string {
-	reserved := `\_*[]()~` + "`" + `>#+-=|{}.!`
-	var b bytes.Buffer
+	var b strings.Builder
 	for _, r := range text {
-		found := false
-		for _, res := range reserved {
-			if r == res {
-				b.WriteRune('\\')
-				b.WriteRune(r)
-				found = true
-				break
-			}
+		if strings.ContainsRune(`\_*[]()~`+"`"+`>#+-=|{}.!`, r) {
+			b.WriteRune('\\')
 		}
-		if !found {
-			b.WriteRune(r)
-		}
+		b.WriteRune(r)
 	}
 	return b.String()
 }

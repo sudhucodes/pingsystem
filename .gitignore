@@ -19,4 +19,4 @@ config.json
 
 # IDE
 .idea/
-.vscode/
+# .vscode/

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"runtime"
 	"syscall"
 
@@ -103,76 +102,28 @@ func main() {
 	// Step 3: Telegram Client
 	tgClient := telegram.NewClient(cfg.BotToken, cfg.ChatID)
 
-	// Collect system metadata
-	info := sysinfo.GetInfo(cfg.DeviceAlias)
-
-	// Step 4: Send Startup / User Login notification
-	if err := cfg.Validate(); err == nil {
-		logger.Info("Sending Startup / User Login notification via Telegram...")
-		if err := tgClient.SendEvent(telegram.EventStartup, info); err != nil {
-			logger.Error("Failed to send Startup notification: %v", err)
-		} else {
-			logger.Info("Startup notification sent successfully.")
+	handleEvent := func(eventType telegram.EventType) {
+		logger.Info("Detected event: %s", eventType)
+		if err := cfg.Validate(); err == nil {
+			info := sysinfo.GetInfo(cfg.DeviceAlias)
+			if err := tgClient.SendEvent(eventType, info); err != nil {
+				logger.Error("Failed to send %s notification: %v", eventType, err)
+			} else {
+				logger.Info("%s notification sent successfully.", eventType)
+			}
 		}
 	}
 
+	// Step 4: Send Startup / User Login notification
+	handleEvent(telegram.EventStartup)
+
 	// Step 5: Event callbacks for Sleep, Wake, Lock, Unlock, Shutdown
 	callbacks := watcher.EventCallbacks{
-		OnSleep: func() {
-			logger.Info("Detected event: Windows Sleep")
-			if err := cfg.Validate(); err == nil {
-				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
-				if err := tgClient.SendEvent(telegram.EventSleep, currentInfo); err != nil {
-					logger.Error("Failed to send Sleep notification: %v", err)
-				} else {
-					logger.Info("Sleep notification sent successfully.")
-				}
-			}
-		},
-		OnWake: func() {
-			logger.Info("Detected event: Windows Wake")
-			if err := cfg.Validate(); err == nil {
-				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
-				if err := tgClient.SendEvent(telegram.EventWake, currentInfo); err != nil {
-					logger.Error("Failed to send Wake notification: %v", err)
-				} else {
-					logger.Info("Wake notification sent successfully.")
-				}
-			}
-		},
-		OnLock: func() {
-			logger.Info("Detected event: Windows Lock")
-			if err := cfg.Validate(); err == nil {
-				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
-				if err := tgClient.SendEvent(telegram.EventLock, currentInfo); err != nil {
-					logger.Error("Failed to send Lock notification: %v", err)
-				} else {
-					logger.Info("Lock notification sent successfully.")
-				}
-			}
-		},
-		OnUnlock: func() {
-			logger.Info("Detected event: Windows Unlock")
-			if err := cfg.Validate(); err == nil {
-				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
-				if err := tgClient.SendEvent(telegram.EventUnlock, currentInfo); err != nil {
-					logger.Error("Failed to send Unlock notification: %v", err)
-				} else {
-					logger.Info("Unlock notification sent successfully.")
-				}
-			}
-		},
-		OnShutdown: func() {
-			logger.Info("Detected event: Windows Shutdown")
-			if err := cfg.Validate(); err == nil {
-				currentInfo := sysinfo.GetInfo(cfg.DeviceAlias)
-				if err := tgClient.SendEvent(telegram.EventShutdown, currentInfo); err != nil {
-					logger.Error("Failed to send Shutdown notification: %v", err)
-				} else {
-					logger.Info("Shutdown notification sent successfully.")
-				}
-			}
-		},
+		OnSleep:    func() { handleEvent(telegram.EventSleep) },
+		OnWake:     func() { handleEvent(telegram.EventWake) },
+		OnLock:     func() { handleEvent(telegram.EventLock) },
+		OnUnlock:   func() { handleEvent(telegram.EventUnlock) },
+		OnShutdown: func() { handleEvent(telegram.EventShutdown) },
 	}
 
 	// Handle process termination signals
@@ -196,10 +147,6 @@ func main() {
 		}
 	} else {
 		logger.Info("PingSystem agent initialized on non-Windows OS (%s). (Win32 event watcher inactive)", runtime.GOOS)
-		// On non-Windows OS, block on signal
 		<-sigChan
 	}
 }
-
-// Suppress unused imports
-var _ = filepath.Join

@@ -20,10 +20,7 @@ type Logger struct {
 	logger      *log.Logger
 }
 
-var (
-	defaultLogger *Logger
-	once          sync.Once
-)
+var defaultLogger *Logger
 
 // GetLogDir returns the log directory path (%APPDATA%\PingSystem\logs).
 func GetLogDir() (string, error) {
