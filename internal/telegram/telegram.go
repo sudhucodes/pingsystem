@@ -62,18 +62,14 @@ func (c *Client) SendEvent(eventType EventType, info sysinfo.Info) error {
 
 	text := fmt.Sprintf(
 		"%s *PingSystem Event: %s*\n\n"+
-			"📱 *Device Alias:* %s\n"+
-			"🖥️ *Computer Name:* %s\n"+
-			"👤 *Username:* %s\n"+
-			"⏰ *Timestamp:* %s\n"+
-			"🪟 *Windows Version:* %s",
+			"*Device Alias:* %s\n"+
+			"*Username:* %s\n"+
+			"*Timestamp:* %s",
 		icon,
 		escapeMarkdown(string(eventType)),
 		escapeMarkdown(info.DeviceAlias),
-		escapeMarkdown(info.ComputerName),
 		escapeMarkdown(info.Username),
 		escapeMarkdown(info.Timestamp),
-		escapeMarkdown(info.WindowsVersion),
 	)
 
 	reqBody := sendMessageRequest{

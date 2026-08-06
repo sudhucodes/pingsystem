@@ -9,23 +9,13 @@ import (
 
 // Info holds system details required for notifications.
 type Info struct {
-	DeviceAlias    string
-	ComputerName   string
-	Username       string
-	Timestamp      string
-	WindowsVersion string
+	DeviceAlias string
+	Username    string
+	Timestamp   string
 }
 
 // GetInfo collects system details for the current host.
 func GetInfo(deviceAlias string) Info {
-	host, err := os.Hostname()
-	if err != nil || host == "" {
-		host = os.Getenv("COMPUTERNAME")
-		if host == "" {
-			host = "Unknown-PC"
-		}
-	}
-
 	username := os.Getenv("USERNAME")
 	if username == "" {
 		u, err := user.Current()
@@ -38,13 +28,11 @@ func GetInfo(deviceAlias string) Info {
 		}
 	}
 
-	now := time.Now().Format("2006-01-02 15:04:05 MST")
+	now := time.Now().Format("2006-01-02 03:04:05 PM MST")
 
 	return Info{
-		DeviceAlias:    deviceAlias,
-		ComputerName:   host,
-		Username:       username,
-		Timestamp:      now,
-		WindowsVersion: GetWindowsVersion(),
+		DeviceAlias: deviceAlias,
+		Username:    username,
+		Timestamp:   now,
 	}
 }

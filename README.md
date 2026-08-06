@@ -69,11 +69,9 @@ Each event sends a Telegram message formatted as follows:
 ```text
 🚀 PingSystem Event: Startup / User Login
 
-📱 Device Alias: My Laptop
-🖥️ Computer Name: DESKTOP-MAIN
-👤 Username: Sudhu
-⏰ Timestamp: 2026-08-05 22:30:00 MST
-🪟 Windows Version: Windows 11 Pro 23H2 (Build 22631)
+Device Alias: My Laptop
+Username: Sudhu
+Timestamp: 2026-08-05 10:30:00 PM MST
 ```
 
 ---
