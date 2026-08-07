@@ -1,5 +1,9 @@
 # PingSystem (Go Edition)
 
+[![CI](https://github.com/sudhucodes/pingsystem/actions/workflows/ci.yml/badge.svg)](https://github.com/sudhucodes/pingsystem/actions/workflows/ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Go Version](https://img.shields.io/badge/Go-1.26+-00ADD8?logo=go)](go.mod)
+
 **PingSystem** is a lightweight, production-ready, native Windows background agent written entirely in Go. It monitors system power and session events and dispatches notifications to Telegram via the Telegram Bot API.
 
 It compiles into a single standalone executable (`PingSystem.exe`) with no runtime dependencies (no Node.js, no Python, no PowerShell polling).
@@ -111,6 +115,12 @@ build.bat
 ├── go.sum                        # Go module checksums
 ├── build.sh                      # Shell script to cross-compile for Windows
 ├── build.bat                     # Windows batch build script
+├── LICENSE                       # Apache-2.0 Open Source License
+├── CONTRIBUTING.md               # Contribution guidelines & Changeset setup
+├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
+├── SECURITY.md                   # Security vulnerability reporting policy
+├── .changeset/                   # Versioning and release management configuration
+├── .github/                      # Issue/PR templates & GitHub Actions CI/Release workflows
 └── internal/
     ├── autostart/                # Registry autostart management (Enable, Disable, IsEnabled)
     ├── config/                   # Config loader & auto-creator (%APPDATA%\PingSystem\config.json)
@@ -119,3 +129,23 @@ build.bat
     ├── telegram/                 # Telegram Bot API notification client
     └── watcher/                  # Win32 hidden message window event loop (WM_POWERBROADCAST, etc.)
 ```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) to get started with setup, coding guidelines, and submitting changesets.
+
+Please also adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## 🔒 Security
+
+If you discover a security vulnerability, please refer to our [Security Policy](SECURITY.md) for instructions on how to report it confidentially.
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0 (Apache-2.0)** - see the [LICENSE](LICENSE) file for details.

@@ -20,3 +20,9 @@ config.json
 # IDE
 .idea/
 # .vscode/
+
+# Node dependencies & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
