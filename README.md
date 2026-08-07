@@ -12,15 +12,15 @@ It compiles into a single standalone executable (`PingSystem.exe`) with no runti
 
 ## Features (v1)
 
--   🚀 **Windows Startup / User Login Notification**
--   🌙 **Windows Sleep Notification** (`WM_POWERBROADCAST` -> `PBT_APMSUSPEND`)
--   ☀️ **Windows Wake Notification** (`WM_POWERBROADCAST` -> `PBT_APMRESUMEAUTOMATIC` / `PBT_APMRESUMESUSPEND`)
--   🔒 **Windows Lock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_LOCK`, e.g. `Win + L`)
--   🔓 **Windows Unlock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_UNLOCK`)
--   🛑 **Windows Shutdown Notification** (`WM_QUERYENDSESSION` / `WM_ENDSESSION` - best effort)
--   ⚙️ **Autostart Helper Flags**: Simple command-line flags to enable/disable Windows registry autostart (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
--   📁 **Daily Logging**: Automatically maintains log files in `%APPDATA%\PingSystem\logs\YYYY-MM-DD.log`.
--   📦 **Single Binary Output**: Compiles into `PingSystem.exe` (~6MB background process).
+-   **Windows Startup / User Login Notification**
+-   **Windows Sleep Notification** (`WM_POWERBROADCAST` -> `PBT_APMSUSPEND`)
+-   **Windows Wake Notification** (`WM_POWERBROADCAST` -> `PBT_APMRESUMEAUTOMATIC` / `PBT_APMRESUMESUSPEND`)
+-   **Windows Lock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_LOCK`, e.g. `Win + L`)
+-   **Windows Unlock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_UNLOCK`)
+-   **Windows Shutdown Notification** (`WM_QUERYENDSESSION` / `WM_ENDSESSION` - best effort)
+-   **Autostart Helper Flags**: Simple command-line flags to enable/disable Windows registry autostart (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+-   **Daily Logging**: Automatically maintains log files in `%APPDATA%\PingSystem\logs\YYYY-MM-DD.log`.
+-   **Single Binary Output**: Compiles into `PingSystem.exe` (~6MB background process).
 
 ---
 
@@ -102,31 +102,6 @@ GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
 
 ```cmd
 build.bat
-```
-
----
-
-## Directory Structure
-
-```text
-.
-├── main.go                       # Main entry point & CLI parser
-├── go.mod                        # Go module definition
-├── go.sum                        # Go module checksums
-├── build.sh                      # Shell script to cross-compile for Windows
-├── build.bat                     # Windows batch build script
-├── LICENSE                       # Apache-2.0 Open Source License
-├── CONTRIBUTING.md               # Contribution guidelines & release setup
-├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
-├── SECURITY.md                   # Security vulnerability reporting policy
-├── .github/                      # Issue/PR templates & GitHub Actions CI/Release workflows
-└── internal/
-    ├── autostart/                # Registry autostart management (Enable, Disable, IsEnabled)
-    ├── config/                   # Config loader & auto-creator (%APPDATA%\PingSystem\config.json)
-    ├── logger/                   # Daily file logging (%APPDATA%\PingSystem\logs\)
-    ├── sysinfo/                  # Native OS metadata (hostname, user, Windows build version)
-    ├── telegram/                 # Telegram Bot API notification client
-    └── watcher/                  # Win32 hidden message window event loop (WM_POWERBROADCAST, etc.)
 ```
 
 ---
