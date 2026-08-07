@@ -73,7 +73,7 @@ jobs:
 
                   echo "Publishing GitHub Release for ${TAG_NAME}..."
                   gh release create "${TAG_NAME}" PingSystem.exe \
-                    --title "PingSystem ${TAG_NAME}" \
+                    --title "${TAG_NAME}" \
                     --generate-notes
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
