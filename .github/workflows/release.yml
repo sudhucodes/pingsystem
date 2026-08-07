@@ -1,75 +1,75 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
-    name: Release & Version Management
-    runs-on: ubuntu-latest
+    release:
+        name: Release & Version Management
+        runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+        permissions:
+            contents: write
+            pull-requests: write
+            id-token: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
 
-      - name: Install dependencies
-        run: npm install
+            - name: Install dependencies
+              run: npm install
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.26.x'
-          check-latest: true
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: "1.26.x"
+                  check-latest: true
 
-      - name: Create Release PR or Publish Tag
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: npm run version
-          publish: npx changeset tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create Release PR or Publish Tag
+              id: changesets
+              uses: changesets/action@v1
+              with:
+                  version: npm run version
+                  publish: npx changeset tag
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Publish Release Artifacts
-        if: steps.changesets.outputs.published == 'true'
-        run: |
-          for tag in ${{ steps.changesets.outputs.publishedPackages }}; do
-            echo "Processing published release..."
-          done
-          
-          # Extract version from package.json
-          VERSION=$(node -p "require('./package.json').version")
-          RELEASE_NAME="PingSystem-v${VERSION}-windows-amd64"
-          
-          echo "Building binary for version ${VERSION}..."
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
-          
-          mkdir -p dist/${RELEASE_NAME}
-          cp PingSystem.exe README.md LICENSE dist/${RELEASE_NAME}/
-          
-          cd dist
-          zip -r "${RELEASE_NAME}.zip" "${RELEASE_NAME}"
-          cd ..
-          
-          echo "Creating GitHub Release for v${VERSION}..."
-          gh release create "v${VERSION}" "dist/${RELEASE_NAME}.zip#PingSystem v${VERSION} (Windows x64)" \
-            --title "PingSystem v${VERSION}" \
-            --notes "Release v${VERSION} of PingSystem. See CHANGELOG.md for details." || true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Build & Publish Release Artifacts
+              if: steps.changesets.outputs.published == 'true'
+              run: |
+                  for tag in ${{ steps.changesets.outputs.publishedPackages }}; do
+                    echo "Processing published release..."
+                  done
+
+                  # Extract version from package.json
+                  VERSION=$(node -p "require('./package.json').version")
+                  RELEASE_NAME="PingSystem-v${VERSION}-windows-amd64"
+
+                  echo "Building binary for version ${VERSION}..."
+                  GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
+
+                  mkdir -p dist/${RELEASE_NAME}
+                  cp PingSystem.exe README.md LICENSE dist/${RELEASE_NAME}/
+
+                  cd dist
+                  zip -r "${RELEASE_NAME}.zip" "${RELEASE_NAME}"
+                  cd ..
+
+                  echo "Creating GitHub Release for v${VERSION}..."
+                  gh release create "v${VERSION}" "dist/${RELEASE_NAME}.zip#PingSystem v${VERSION} (Windows x64)" \
+                    --title "PingSystem v${VERSION}" \
+                    --notes "Release v${VERSION} of PingSystem. See CHANGELOG.md for details." || true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

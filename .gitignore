@@ -14,7 +14,6 @@
 # Local binaries and configs
 PingSystem.exe
 logs/
-config.json
 .env
 
 # IDE

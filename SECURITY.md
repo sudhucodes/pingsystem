@@ -20,5 +20,5 @@ If you discover a security vulnerability within **PingSystem**, please report it
 
 ### Response Expectations
 
-- **Acknowledgment**: Within 48 hours.
-- **Assessment & Patch**: Security fixes will be prioritized and released as a patch release via GitHub Releases as soon as possible.
+-   **Acknowledgment**: Within 48 hours.
+-   **Assessment & Patch**: Security fixes will be prioritized and released as a patch release via GitHub Releases as soon as possible.

@@ -12,15 +12,15 @@ It compiles into a single standalone executable (`PingSystem.exe`) with no runti
 
 ## Features (v1)
 
-- 🚀 **Windows Startup / User Login Notification**
-- 🌙 **Windows Sleep Notification** (`WM_POWERBROADCAST` -> `PBT_APMSUSPEND`)
-- ☀️ **Windows Wake Notification** (`WM_POWERBROADCAST` -> `PBT_APMRESUMEAUTOMATIC` / `PBT_APMRESUMESUSPEND`)
-- 🔒 **Windows Lock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_LOCK`, e.g. `Win + L`)
-- 🔓 **Windows Unlock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_UNLOCK`)
-- 🛑 **Windows Shutdown Notification** (`WM_QUERYENDSESSION` / `WM_ENDSESSION` - best effort)
-- ⚙️ **Autostart Helper Flags**: Simple command-line flags to enable/disable Windows registry autostart (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
-- 📁 **Daily Logging**: Automatically maintains log files in `%APPDATA%\PingSystem\logs\YYYY-MM-DD.log`.
-- 📦 **Single Binary Output**: Compiles into `PingSystem.exe` (~6MB background process).
+-   🚀 **Windows Startup / User Login Notification**
+-   🌙 **Windows Sleep Notification** (`WM_POWERBROADCAST` -> `PBT_APMSUSPEND`)
+-   ☀️ **Windows Wake Notification** (`WM_POWERBROADCAST` -> `PBT_APMRESUMEAUTOMATIC` / `PBT_APMRESUMESUSPEND`)
+-   🔒 **Windows Lock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_LOCK`, e.g. `Win + L`)
+-   🔓 **Windows Unlock Notification** (`WM_WTSSESSION_CHANGE` -> `WTS_SESSION_UNLOCK`)
+-   🛑 **Windows Shutdown Notification** (`WM_QUERYENDSESSION` / `WM_ENDSESSION` - best effort)
+-   ⚙️ **Autostart Helper Flags**: Simple command-line flags to enable/disable Windows registry autostart (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+-   📁 **Daily Logging**: Automatically maintains log files in `%APPDATA%\PingSystem\logs\YYYY-MM-DD.log`.
+-   📦 **Single Binary Output**: Compiles into `PingSystem.exe` (~6MB background process).
 
 ---
 
@@ -36,17 +36,17 @@ Example `config.json`:
 
 ```json
 {
-  "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
-  "chatId": "YOUR_TELEGRAM_CHAT_ID",
-  "deviceAlias": "My Laptop"
+    "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
+    "chatId": "YOUR_TELEGRAM_CHAT_ID",
+    "deviceAlias": "My Laptop"
 }
 ```
 
 ### Fields
 
-- `botToken`: Your Telegram Bot API token from [@BotFather](https://t.me/BotFather).
-- `chatId`: Your Telegram User or Group Chat ID.
-- `deviceAlias`: A custom friendly alias for the device (e.g. `"Workstation 01"`).
+-   `botToken`: Your Telegram Bot API token from [@BotFather](https://t.me/BotFather).
+-   `chatId`: Your Telegram User or Group Chat ID.
+-   `deviceAlias`: A custom friendly alias for the device (e.g. `"Workstation 01"`).
 
 ---
 
@@ -84,7 +84,7 @@ Timestamp: 2026-08-05 10:30:00 PM MST
 
 ### Requirements
 
-- Go 1.26+ installed
+-   Go 1.26+ installed
 
 ### Build Binary (Cross-compile on macOS / Linux)
 
