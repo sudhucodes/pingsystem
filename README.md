@@ -116,10 +116,9 @@ build.bat
 ├── build.sh                      # Shell script to cross-compile for Windows
 ├── build.bat                     # Windows batch build script
 ├── LICENSE                       # Apache-2.0 Open Source License
-├── CONTRIBUTING.md               # Contribution guidelines & Changeset setup
+├── CONTRIBUTING.md               # Contribution guidelines & release setup
 ├── CODE_OF_CONDUCT.md            # Contributor Covenant Code of Conduct
 ├── SECURITY.md                   # Security vulnerability reporting policy
-├── .changeset/                   # Versioning and release management configuration
 ├── .github/                      # Issue/PR templates & GitHub Actions CI/Release workflows
 └── internal/
     ├── autostart/                # Registry autostart management (Enable, Disable, IsEnabled)

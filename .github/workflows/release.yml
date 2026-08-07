@@ -9,7 +9,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
     release:
-        name: Release & Version Management
+        name: Build & Publish Release
         runs-on: ubuntu-latest
 
         permissions:
@@ -28,48 +28,62 @@ jobs:
               with:
                   node-version: 20
 
-            - name: Install dependencies
-              run: npm install
-
             - name: Set up Go
               uses: actions/setup-go@v5
               with:
                   go-version: "1.26.x"
                   check-latest: true
 
-            - name: Create Release PR or Publish Tag
-              id: changesets
-              uses: changesets/action@v1
-              with:
-                  version: npm run version
-                  publish: npx changeset tag
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Build & Publish Release Artifacts
-              if: steps.changesets.outputs.published == 'true'
+            - name: Check package.json Version & Tag Status
+              id: check_version
               run: |
-                  for tag in ${{ steps.changesets.outputs.publishedPackages }}; do
-                    echo "Processing published release..."
-                  done
-
-                  # Extract version from package.json
                   VERSION=$(node -p "require('./package.json').version")
-                  RELEASE_NAME="PingSystem-v${VERSION}-windows-amd64"
+                  TAG_NAME="v${VERSION}"
 
-                  echo "Building binary for version ${VERSION}..."
+                  echo "Current package.json version: ${VERSION}"
+                  echo "Target release tag: ${TAG_NAME}"
+                  echo "version=${VERSION}" >> $GITHUB_OUTPUT
+                  echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+
+                  if git rev-parse "${TAG_NAME}" >/dev/null 2>&1 || git ls-remote --tags origin "refs/tags/${TAG_NAME}" | grep -q "${TAG_NAME}"; then
+                    echo "Tag ${TAG_NAME} already exists. Skipping build and release."
+                    echo "should_release=false" >> $GITHUB_OUTPUT
+                  else
+                    echo "New version detected (${TAG_NAME}). Proceeding with release..."
+                    echo "should_release=true" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Create Git Tag, Build & Publish Release
+              if: steps.check_version.outputs.should_release == 'true'
+              run: |
+                  VERSION="${{ steps.check_version.outputs.version }}"
+                  TAG_NAME="${{ steps.check_version.outputs.tag }}"
+                  RELEASE_DIR="PingSystem-${TAG_NAME}-windows-amd64"
+
+                  echo "Configuring Git user..."
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+                  echo "Creating and pushing tag ${TAG_NAME}..."
+                  git tag -a "${TAG_NAME}" -m "Release ${TAG_NAME}"
+                  git push origin "${TAG_NAME}"
+
+                  echo "Building Windows executable PingSystem.exe..."
                   GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
 
-                  mkdir -p dist/${RELEASE_NAME}
-                  cp PingSystem.exe README.md LICENSE dist/${RELEASE_NAME}/
+                  echo "Packaging release distribution..."
+                  mkdir -p "dist/${RELEASE_DIR}"
+                  cp PingSystem.exe README.md LICENSE "dist/${RELEASE_DIR}/"
 
                   cd dist
-                  zip -r "${RELEASE_NAME}.zip" "${RELEASE_NAME}"
+                  zip -r "${RELEASE_DIR}.zip" "${RELEASE_DIR}"
                   cd ..
 
-                  echo "Creating GitHub Release for v${VERSION}..."
-                  gh release create "v${VERSION}" "dist/${RELEASE_NAME}.zip#PingSystem v${VERSION} (Windows x64)" \
-                    --title "PingSystem v${VERSION}" \
-                    --notes "Release v${VERSION} of PingSystem. See CHANGELOG.md for details." || true
+                  echo "Publishing GitHub Release for ${TAG_NAME}..."
+                  gh release create "${TAG_NAME}" \
+                    "PingSystem.exe#PingSystem.exe (Standalone Windows Executable)" \
+                    "dist/${RELEASE_DIR}.zip#${RELEASE_DIR}.zip (Complete Package)" \
+                    --title "PingSystem ${TAG_NAME}" \
+                    --generate-notes
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

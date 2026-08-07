@@ -15,7 +15,6 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 ### Prerequisites
 
 -   **Go**: 1.26 or newer ([golang.org](https://golang.org/))
--   **Node.js**: 18+ and `npm` (required for `@changesets/cli` release versioning)
 -   **Git**: [git-scm.com](https://git-scm.com/)
 
 ### Getting Started
@@ -26,15 +25,11 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
     git clone https://github.com/sudhucodes/pingsystem.git
     cd pingsystem
     ```
-3. **Install Node Dependencies** (for changeset tooling):
-    ```bash
-    npm install
-    ```
-4. **Run Tests Locally**:
+3. **Run Tests Locally**:
     ```bash
     go test ./...
     ```
-5. **Verify Cross-Compilation**:
+4. **Verify Cross-Compilation**:
     ```bash
     ./build.sh
     # Or manually:
@@ -43,24 +38,15 @@ This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDU
 
 ---
 
-## 📦 Versioning & Changesets Workflow
+## 📦 Release Process
 
-PingSystem uses [Changesets](https://github.com/changesets/changesets) to automate semantic versioning and changelog generation.
+PingSystem releases are automatically managed based on the `version` field in `package.json`.
 
-### Adding a Changeset to Your PR
-
-Whenever you submit a pull request that introduces a fix, feature, or breaking change:
-
-1. Run the changeset CLI:
-    ```bash
-    npx changeset
-    ```
-2. Select the type of bump (`patch`, `minor`, `major`):
-    - **patch**: Bug fixes, documentation updates, non-breaking internal cleanup.
-    - **minor**: New features or expanded event hooks (backwards-compatible).
-    - **major**: Breaking changes to CLI flags or configuration schema.
-3. Write a concise summary of the change.
-4. Commit the generated markdown file in `.changeset/` along with your PR.
+When a maintainer bumps the `"version"` in `package.json` (e.g. `"0.0.2"` -> `"0.0.3"`) on the `main` branch:
+1. GitHub Actions automatically creates and pushes the release tag `v0.0.3`.
+2. Cross-compiles the native Windows binary `PingSystem.exe`.
+3. Creates a ZIP package containing the binary and license.
+4. Publishes a GitHub Release with `PingSystem.exe` directly attached.
 
 ---
 
@@ -90,9 +76,8 @@ Before committing your changes, ensure:
     git checkout -b feature/my-cool-feature
     ```
 2. Commit your changes with clear, descriptive commit messages.
-3. Include a changeset (`npx changeset`).
-4. Push to your fork and open a Pull Request against `main`.
-5. Ensure all GitHub CI checks pass!
+3. Push to your fork and open a Pull Request against `main`.
+4. Ensure all GitHub CI checks pass!
 
 ---
 

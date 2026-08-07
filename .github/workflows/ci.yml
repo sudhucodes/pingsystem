@@ -41,25 +41,3 @@ jobs:
               run: |
                   GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
                   ls -lh PingSystem.exe
-
-    changeset-check:
-        name: Changeset PR Verification
-        runs-on: ubuntu-latest
-        if: github.event_name == 'pull_request'
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Install dependencies
-              run: npm install
-
-            - name: Verify Changeset status
-              run: npx changeset status --since=origin/main
