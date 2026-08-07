@@ -1,9 +1,7 @@
 {
     "name": "pingsystem",
     "version": "0.0.2",
-    "files": [
-        "dist"
-    ],
+    "private": true,
     "description": "Native Windows background agent in Go to monitor system events and dispatch Telegram notifications",
     "scripts": {
         "changeset": "changeset",
