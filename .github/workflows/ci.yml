@@ -1,4 +1,5 @@
-name: CI
+name: CI Check
+run-name: 'CI Check: ${{ github.event.head_commit.message || github.ref }}'
 
 on:
     push:
@@ -10,7 +11,7 @@ on:
 
 jobs:
     lint-and-test:
-        name: Lint, Test & Build (Windows Cross-Compile)
+        name: Run Go Linters & Tests (Windows Cross-Compile)
         runs-on: ubuntu-latest
 
         steps:

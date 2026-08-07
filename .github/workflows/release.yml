@@ -1,4 +1,5 @@
-name: Release
+name: Release Publisher
+run-name: 'Release Publisher: ${{ github.event.head_commit.message || github.ref }}'
 
 on:
     push:
@@ -9,7 +10,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
     release:
-        name: Build & Publish Release
+        name: Build & Publish Binary Release
         runs-on: ubuntu-latest
 
         permissions:
@@ -26,7 +27,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 20
+                  node-version: 24
 
             - name: Set up Go
               uses: actions/setup-go@v5
@@ -58,7 +59,6 @@ jobs:
               run: |
                   VERSION="${{ steps.check_version.outputs.version }}"
                   TAG_NAME="${{ steps.check_version.outputs.tag }}"
-                  RELEASE_DIR="PingSystem-${TAG_NAME}-windows-amd64"
 
                   echo "Configuring Git user..."
                   git config user.name "github-actions[bot]"
@@ -71,18 +71,8 @@ jobs:
                   echo "Building Windows executable PingSystem.exe..."
                   GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o PingSystem.exe .
 
-                  echo "Packaging release distribution..."
-                  mkdir -p "dist/${RELEASE_DIR}"
-                  cp PingSystem.exe README.md LICENSE "dist/${RELEASE_DIR}/"
-
-                  cd dist
-                  zip -r "${RELEASE_DIR}.zip" "${RELEASE_DIR}"
-                  cd ..
-
                   echo "Publishing GitHub Release for ${TAG_NAME}..."
-                  gh release create "${TAG_NAME}" \
-                    "PingSystem.exe#PingSystem.exe (Standalone Windows Executable)" \
-                    "dist/${RELEASE_DIR}.zip#${RELEASE_DIR}.zip (Complete Package)" \
+                  gh release create "${TAG_NAME}" PingSystem.exe \
                     --title "PingSystem ${TAG_NAME}" \
                     --generate-notes
               env:
